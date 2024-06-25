@@ -1,0 +1,14 @@
+spring:
+#  datasource:
+#    username: root
+#    password: root
+#    #    password: 71789
+#    #    allowMultiQueries=true  ?????
+#    url: jdbc:mysql://localhost:3306/fishdb?allowMultiQueries=true
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+server:
+  port: 8999
+  servlet:
+    context-path: /fish-table-design-api
+  tomcat:
+    max-swallow-size: -1

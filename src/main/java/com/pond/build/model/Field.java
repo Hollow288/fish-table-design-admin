@@ -7,6 +7,8 @@ public class Field {
 
     String remark;
 
+    String describe;
+
     public String getFieldName() {
         return fieldName;
     }
@@ -29,5 +31,14 @@ public class Field {
 
     public void setRemark(String remark) {
         this.remark = remark;
+    }
+
+
+    public String getDescribe() {
+        return describe;
+    }
+
+    public void setDescribe(String describe) {
+        this.describe = describe;
     }
 }

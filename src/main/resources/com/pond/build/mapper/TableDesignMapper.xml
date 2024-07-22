@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.pond.build.mapper.TableDesignMapper">
+
+
+    <resultMap type="com.pond.build.model.Field" id="FieldMap">
+        <result property="fieldName" column="fieldName" jdbcType="VARCHAR"/>
+        <result property="fieldType" column="fieldType" jdbcType="VARCHAR"/>
+        <result property="remark" column="remark" jdbcType="VARCHAR"/>
+        <result property="describe" column="describe" jdbcType="VARCHAR"/>
+    </resultMap>
+
+
+
+
+    <select id="getTableDesignByTableName" resultMap="FieldMap">
+        SELECT UPPER(COLUMN_NAME)                                            AS 'fieldName',
+               case
+                   when DATA_TYPE = 'numeric' then 'numeric' + '(' + convert(varchar, NUMERIC_PRECISION) + ',' +
+                                                   convert(varchar, NUMERIC_SCALE) + ')'
+                   when DATA_TYPE = 'varchar' then 'varchar' + '(' + convert(varchar, CHARACTER_MAXIMUM_LENGTH) + ')'
+                   else DATA_TYPE end                              as 'fieldType',
+               convert(VARCHAR(255), (SELECT p.value
+                                      FROM sys.tables AS t
+                                               INNER JOIN sys.columns AS c ON t.object_id = c.object_id
+                                               LEFT JOIN sys.extended_properties AS p
+                                                         ON t.object_id = p.major_id AND c.column_id = p.minor_id
+                                      WHERE t.name = cl.TABLE_NAME
+                                        and c.name = cl.COLUMN_NAME)) AS 'remark'
+        FROM INFORMATION_SCHEMA.COLUMNS cl
+        WHERE TABLE_NAME = #{tableName}
+    </select>
+
+
+
+</mapper>

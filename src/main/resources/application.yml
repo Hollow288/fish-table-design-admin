@@ -12,3 +12,12 @@ server:
     context-path: /fish-table-design-api
   tomcat:
     max-swallow-size: -1
+
+
+mybatis-plus:
+  # 搜索指定包别名
+  type-aliases-package: com.pond.build.model
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapper-locations: classpath:com/pond/build/mapper/*.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

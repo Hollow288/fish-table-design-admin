@@ -21,3 +21,10 @@ mybatis-plus:
   mapper-locations: classpath:com/pond/build/mapper/*.xml
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+
+# 翻译相关
+
+translate:
+  appid:
+  securityKey:

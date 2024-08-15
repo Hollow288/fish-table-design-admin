@@ -19,9 +19,14 @@ class FishTableDesignAdminApplicationTests {
 
     @Test
     void contextLoads() {
-        Object test = null;
-        String testString = String.valueOf(test);
-        System.out.println(testString);
+//        Object test = null;
+//        String testString = String.valueOf(test);
+
+        Map<String, Object> stringObjectHashMap = new HashMap<>();
+        Object o = null;
+
+        String test = (String)o;
+        System.out.println(test);
     }
 
 
@@ -230,6 +235,31 @@ class FishTableDesignAdminApplicationTests {
         if( value != null ) {
             if( value instanceof BigDecimal ) {
                 ret = (BigDecimal) value;
+            }else if( value instanceof Double ){
+                return new BigDecimal(((Double) value)).setScale(2, RoundingMode.HALF_UP);
+            } else if( value instanceof String ) {
+                if((StringUtils.isNotBlank((String) value))){
+                    ret = new BigDecimal( (String) value );
+                }
+            } else if( value instanceof BigInteger) {
+                ret = new BigDecimal( (BigInteger) value );
+            } else if( value instanceof Number ) {
+                ret = new BigDecimal( ((Number)value).doubleValue() );
+            } else {
+                return ret;
+            }
+        }
+        return ret;
+    }
+
+
+    public static BigDecimal parseDecimalRate(Object value ) {
+        BigDecimal ret = null;
+        if( value != null ) {
+            if( value instanceof BigDecimal ) {
+                ret = (BigDecimal) value;
+            }else if( value instanceof Double ){
+                return new BigDecimal(((Double) value)).setScale(6, RoundingMode.HALF_UP);
             } else if( value instanceof String ) {
                 if((StringUtils.isNotBlank((String) value))){
                     ret = new BigDecimal( (String) value );
@@ -312,26 +342,29 @@ class FishTableDesignAdminApplicationTests {
     @Test
     public void testDate(){
 
-        Date testDate = new Date();
-
-        LocalDateTime dateTime = LocalDateTime.now();
-
-        ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.systemDefault());
-
-
-        Date date = parseDate(testDate);
-        Date date1 = parseDate(dateTime);
-        Date date2 = parseDate(zonedDateTime);
-
-        Date a = null;
-        Date b = null;
+//        Date testDate = new Date();
+//
+//        LocalDateTime dateTime = LocalDateTime.now();
+//
+//        ZonedDateTime zonedDateTime = dateTime.atZone(ZoneId.systemDefault());
+//
+//
+//        Date date = parseDate(testDate);
+//        Date date1 = parseDate(dateTime);
+//        Date date2 = parseDate(zonedDateTime);
+//
+//        Date a = null;
+//        Date b = null;
 
 //        if(Objects.equals(a,b)){
 //
 //        }
+        Double value = 1.235;
 
-        BigDecimal bigDecimal = new BigDecimal("");
-        System.out.println(toSimpleBigDecimalString(bigDecimal));
+        System.out.println(value instanceof Number);
+
+//        BigDecimal bigDecimal = new BigDecimal("");
+//        System.out.println(toSimpleBigDecimalString(bigDecimal));
 
 
     }
@@ -343,74 +376,74 @@ class FishTableDesignAdminApplicationTests {
     // origCurrencyField (可选) 告诉方法哪个字段是源表的货币字段
     // modifyCurrencyField (可选) 告诉方法哪个字段是变更表的货币字段
     // 如果不给货币字段,并且使用了-curr后缀,默认按"origCurrency"为源/变更货币字段
-    public Map<String,String> autoModifyRemark(Map<String,Object> paraMap){
+    public Map<String, String> autoModifyRemark(Map<String, Object> paraMap) {
         String resultModifyRemark = "";
 
-        Map<String,Object> origMap = (Map<String,Object>)paraMap.get("origMap");
-        Map<String,Object> modifyMap = (Map<String,Object>)paraMap.get("modifyMap");
-        List<String> commonFieldList =  (List<String>)paraMap.get("commonField");
-        List<String> commonFieldNameList = (List<String>)paraMap.get("commonFieldName");
+        Map<String, Object> origMap = (Map<String, Object>) paraMap.get("origMap");
+        Map<String, Object> modifyMap = (Map<String, Object>) paraMap.get("modifyMap");
+        List<String> commonFieldList = (List<String>) paraMap.get("commonField");
+        List<String> commonFieldNameList = (List<String>) paraMap.get("commonFieldName");
 
         for (int i = 0; i < commonFieldList.size(); i++) {
 
-            if(commonFieldList.get(i).contains("-date")){
+            if (commonFieldList.get(i).contains("-date")) {
                 String trueCommonField = commonFieldList.get(i).split("-")[0];
-                if(!Objects.equals(parseDate(origMap.get(trueCommonField)),parseDate(modifyMap.get(trueCommonField)))){
-                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + toSimpleDateString(parseDate(origMap.get(trueCommonField))) +"】变更后【" + toSimpleDateString(parseDate(modifyMap.get(trueCommonField))) +"】\n";
+                if (!Objects.equals(parseDate(origMap.get(trueCommonField)), parseDate(modifyMap.get(trueCommonField)))) {
+                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + toSimpleDateString(parseDate(origMap.get(trueCommonField))) + "】变更后【" + toSimpleDateString(parseDate(modifyMap.get(trueCommonField))) + "】\n";
                 }
-            }else if(commonFieldList.get(i).contains("-wy")){
+            } else if (commonFieldList.get(i).contains("-wy")) {
                 String trueCommonField = commonFieldList.get(i).split("-")[0];
-                if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField)))) != 0) {
-                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【"+ (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP))+ "万元") +"】变更后【"+ (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP)) + "万元") +"】\n";
+                if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField))) != 0) {
+                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP)) + "万元") + "】变更后【" + (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP)) + "万元") + "】\n";
                 }
-            }else if(commonFieldList.get(i).contains("-y")){
+            } else if (commonFieldList.get(i).contains("-y")) {
                 String trueCommonField = commonFieldList.get(i).split("-")[0];
-                if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField)))) != 0) {
-                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【"+ (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField))) + "元") +"】变更后【"+ (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField))) + "元") +"】\n";
+                if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField))) != 0) {
+                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField))) + "元") + "】变更后【" + (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField))) + "元") + "】\n";
                 }
-            }else if(commonFieldList.get(i).contains("-rate")){
+            } else if (commonFieldList.get(i).contains("-rate")) {
                 String trueCommonField = commonFieldList.get(i).split("-")[0];
-                if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField)))) != 0) {
-                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【"+ (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField)).multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP))+ "%") +"】变更后【"+ (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField)).multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP)) + "%") +"】\n";
+                if ((parseDecimalRate(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimalRate(origMap.get(trueCommonField))).compareTo(parseDecimalRate(modifyMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimalRate(modifyMap.get(trueCommonField))) != 0) {
+                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + (parseDecimalRate(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimalRate(origMap.get(trueCommonField)).multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP)) + "%") + "】变更后【" + (parseDecimalRate(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimalRate(modifyMap.get(trueCommonField)).multiply(new BigDecimal("100")).setScale(2, RoundingMode.HALF_UP)) + "%") + "】\n";
                 }
-            }else if(commonFieldList.get(i).contains("-curr")){
+            } else if (commonFieldList.get(i).contains("-curr")) {
                 String trueCommonField = commonFieldList.get(i).split("-")[0];
                 String origCurrency;
                 String modifyCurrency;
                 //先检查是否传入了币种参数
-                if(paraMap.get("origCurrencyField") != null && paraMap.get("modifyCurrencyField") != null){
-                    origCurrency = (String)origMap.get(paraMap.get("origCurrencyField").toString());
-                    modifyCurrency = (String)origMap.get(paraMap.get("modifyCurrencyField").toString());
-                }else{
+                if (paraMap.get("origCurrencyField") != null && paraMap.get("modifyCurrencyField") != null) {
+                    origCurrency = (String) origMap.get(paraMap.get("origCurrencyField").toString());
+                    modifyCurrency = (String) origMap.get(paraMap.get("modifyCurrencyField").toString());
+                } else {
                     //没有传入币种就使用默认字段
                     //原表单币种
-                    origCurrency = origMap.get("origCurrency") == null ? "": (String) origMap.get("origCurrency");
+                    origCurrency = origMap.get("origCurrency") == null ? "" : (String) origMap.get("origCurrency");
                     //变更表单币种
-                    modifyCurrency = modifyMap.get("origCurrency") == null ? "": (String) modifyMap.get("origCurrency");
+                    modifyCurrency = modifyMap.get("origCurrency") == null ? "" : (String) modifyMap.get("origCurrency");
                 }
                 //处理币种
-                if (StringUtils.isBlank(origCurrency) || origCurrency.equals("人民币元")){
-                    origCurrency="万元";
-                }else {
-                    origCurrency="万"+origCurrency;
+                if (StringUtils.isBlank(origCurrency) || origCurrency.equals("人民币元")) {
+                    origCurrency = "万元";
+                } else {
+                    origCurrency = "万" + origCurrency;
                 }
-                if (StringUtils.isBlank(modifyCurrency) || modifyCurrency.equals("人民币元")){
-                    modifyCurrency="万元";
-                }else {
-                    modifyCurrency="万"+modifyCurrency;
+                if (StringUtils.isBlank(modifyCurrency) || modifyCurrency.equals("人民币元")) {
+                    modifyCurrency = "万元";
+                } else {
+                    modifyCurrency = "万" + modifyCurrency;
                 }
-                if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField)))) != 0) {
-                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【"+ (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP))+ origCurrency) +"】变更后【"+ (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP)) + modifyCurrency) +"】\n";
+                if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField))) != 0) {
+                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP)) + origCurrency) + "】变更后【" + (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP)) + modifyCurrency) + "】\n";
                 }
-            }else{
-                if(!Objects.equals(String.valueOf(origMap.get(commonFieldList.get(i)) == null ? "" : origMap.get(commonFieldList.get(i))), String.valueOf(modifyMap.get(commonFieldList.get(i)) == null ? "" : modifyMap.get(commonFieldList.get(i))))){
-                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【"+ (origMap.get(commonFieldList.get(i)) == null ? "" : origMap.get(commonFieldList.get(i))) +"】变更后【" + (modifyMap.get(commonFieldList.get(i))  == null ? "" : modifyMap.get(commonFieldList.get(i))) +"】\n";
+            } else {
+                if (!Objects.equals(String.valueOf(origMap.get(commonFieldList.get(i)) == null ? "" : origMap.get(commonFieldList.get(i))), String.valueOf(modifyMap.get(commonFieldList.get(i)) == null ? "" : modifyMap.get(commonFieldList.get(i))))) {
+                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + (origMap.get(commonFieldList.get(i)) == null ? "" : origMap.get(commonFieldList.get(i))) + "】变更后【" + (modifyMap.get(commonFieldList.get(i)) == null ? "" : modifyMap.get(commonFieldList.get(i))) + "】\n";
                 }
             }
 
         }
-        Map<String,String> result = new HashMap<String,String>();
-        result.put("result",resultModifyRemark);
+        Map<String, String> result = new HashMap<String, String>();
+        result.put("result", resultModifyRemark);
 
         return result;
     }

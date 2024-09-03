@@ -372,7 +372,7 @@ class FishTableDesignAdminApplicationTests {
     // origMap 源数据Map
     // modifyMap 变更数据Map
     // commonField 需要生成摘要的字段
-    // commonFieldName 需要生成摘要的字段名称(后缀-date为日期 -wy为万元 -y为元 -rate为百分比 -curr为特殊币种)
+    // commonFieldName 需要生成摘要的字段名称(后缀-date为日期 -wy为万元 -y为元 -rate为百分比 -curr为特殊币种 -num为数字)
     // origCurrencyField (可选) 告诉方法哪个字段是源表的货币字段
     // modifyCurrencyField (可选) 告诉方法哪个字段是变更表的货币字段
     // 如果不给货币字段,并且使用了-curr后缀,默认按"origCurrency"为源/变更货币字段
@@ -435,6 +435,11 @@ class FishTableDesignAdminApplicationTests {
                 if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField))) != 0) {
                     resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP)) + origCurrency) + "】变更后【" + (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField)).divide(new BigDecimal("10000"), 6, RoundingMode.HALF_UP)) + modifyCurrency) + "】\n";
                 }
+            }else if(commonFieldList.get(i).contains("-num")){
+                String trueCommonField = commonFieldList.get(i).split("-")[0];
+                if ((parseDecimal(origMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(origMap.get(trueCommonField))).compareTo(parseDecimal(modifyMap.get(trueCommonField)) == null ? new BigDecimal(0) : parseDecimal(modifyMap.get(trueCommonField))) != 0) {
+                    resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + (parseDecimal(origMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(origMap.get(trueCommonField)))) + "】变更后【" + (parseDecimal(modifyMap.get(trueCommonField)) == null ? "" : toSimpleBigDecimalString(parseDecimal(modifyMap.get(trueCommonField)))) + "】\n";
+                }
             } else {
                 if (!Objects.equals(String.valueOf(origMap.get(commonFieldList.get(i)) == null ? "" : origMap.get(commonFieldList.get(i))), String.valueOf(modifyMap.get(commonFieldList.get(i)) == null ? "" : modifyMap.get(commonFieldList.get(i))))) {
                     resultModifyRemark += commonFieldNameList.get(i) + ":变更前【" + (origMap.get(commonFieldList.get(i)) == null ? "" : origMap.get(commonFieldList.get(i))) + "】变更后【" + (modifyMap.get(commonFieldList.get(i)) == null ? "" : modifyMap.get(commonFieldList.get(i))) + "】\n";
@@ -447,6 +452,50 @@ class FishTableDesignAdminApplicationTests {
 
         return result;
     }
+
+
+    public static String convertToDatabaseField(String className) {
+        // 将每个大写字母前面添加下划线
+        String result = className.replaceAll("([a-z])([A-Z])", "$1_$2");
+        // 将所有字母转换为小写
+        result = result.toLowerCase();
+        // 返回最终的数据库字段格式
+        return result;
+    }
+
+
+    @Test
+    public void testField(){
+//        System.out.println(convertToDatabaseField("robxzhNm"));
+//        System.out.println(convertToDatabaseField("FyMdm41"));
+//        System.out.println(convertToDatabaseField("invoicecode"));
+        String[] compareArr = {};
+
+
+        String[] compareNameArr = {};
+
+        findStringIndex(compareNameArr,"进度款支付比例");
+        System.out.println(compareArr[51]);
+//        System.out.println(compareArr[149]);
+//        System.out.println(compareArr[156]);
+
+
+    }
+
+
+    public static void findStringIndex(String[] array, String target) {
+
+        int count = 0;
+        for (int i = 0; i < array.length; i++) {
+            if (target.equals(array[i])) {
+                System.out.println("第" + (count+1) + "次出现,下标为:" + i );
+                count++;
+//                return i; // 找到字符串，返回下标
+            }
+        }
+    }
+
+
 
 
 

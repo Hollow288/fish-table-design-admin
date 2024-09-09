@@ -11,7 +11,7 @@ import java.util.Map;
 @Mapper
 @Repository
 public interface TableDesignMapper {
-    List<Field> getTableDesignByTableName(@Param("tableName")String tableName);
+    List<Field> getSqlServerTableDesignByTableName(@Param("tableName")String tableName);
 //
 //    List<String> getAllMenuIdByUserId(String userId);
 //

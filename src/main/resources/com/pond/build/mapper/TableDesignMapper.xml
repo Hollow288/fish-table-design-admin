@@ -13,7 +13,7 @@
 
 
 
-    <select id="getTableDesignByTableName" resultMap="FieldMap">
+    <select id="getSqlServerTableDesignByTableName" resultMap="FieldMap">
         SELECT UPPER(COLUMN_NAME)                                            AS 'fieldName',
                case
                    when DATA_TYPE = 'numeric' then 'numeric' + '(' + convert(varchar, NUMERIC_PRECISION) + ',' +

@@ -40,7 +40,7 @@ public class TableDesignController {
 
     @GetMapping("/tableDesign/{tableName}")
     public List<Field> getTableDesignByName(@PathVariable("tableName") String tableName){
-        return tableDesignMapper.getTableDesignByTableName(tableName);
+        return tableDesignMapper.getSqlServerTableDesignByTableName(tableName);
     }
 
 

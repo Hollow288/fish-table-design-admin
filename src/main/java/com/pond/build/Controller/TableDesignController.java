@@ -19,6 +19,7 @@ import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @RestController
 public class TableDesignController {
@@ -38,11 +39,15 @@ public class TableDesignController {
     private String securityKey;
 
 
-    @GetMapping("/tableDesign/{tableName}")
-    public List<Field> getTableDesignByName(@PathVariable("tableName") String tableName){
-        return tableDesignMapper.getSqlServerTableDesignByTableName(tableName);
-    }
+    @GetMapping("/tableDesign/{tableName}/{dataBase}")
+    public List<Field> getTableDesignByName(@PathVariable("tableName") String tableName,@PathVariable("dataBase") String dataBase){
+        if(Objects.equals(dataBase,"sqlserver")){
+            return tableDesignMapper.getSqlServerTableDesignByTableName(tableName);
+        }else{
+            return null;
+        }
 
+    }
 
     @GetMapping("/tableDesign/translate/{fieldName}")
     public Map<String,Object> translate(@PathVariable("fieldName") String fieldName){

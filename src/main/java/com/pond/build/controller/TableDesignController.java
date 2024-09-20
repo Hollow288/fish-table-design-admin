@@ -1,4 +1,4 @@
-package com.pond.build.Controller;
+package com.pond.build.controller;
 
 import cn.hutool.http.HttpException;
 import cn.hutool.http.HttpRequest;
